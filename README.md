@@ -317,3 +317,13 @@ Refer to [CONTRIBUTING.md](/CONTRIBUTING.md) for more details on contributing, i
 Made with ❤️ and PHP
 
 <a href="https://heroku.com/"><img alt="Powered by Heroku" title="Powered by Heroku" src="https://img.shields.io/badge/-Powered%20by%20Heroku-6567a5?style=for-the-badge&logo=heroku&logoColor=white"/></a>
+
+## GitHub Container Registry
+
+A tested Linux amd64 image is published on each push to `main`. `latest` follows main; `sha-<commit>` identifies an exact build.
+
+```sh
+docker run --rm -p 8080:80 -e TOKEN ghcr.io/abdallah-shehawey/github-readme-streak-stats:latest
+```
+
+Open http://localhost:8080/demo/. Export your own GitHub `TOKEN` for contribution cards before running the container. No token is embedded in the image. This distribution retains the upstream MIT license.

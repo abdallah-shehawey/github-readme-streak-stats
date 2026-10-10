@@ -19,21 +19,25 @@ COPY --from=composer/composer:latest-bin@sha256:c9bda63056674836406cacfbbdd8ef77
 
 # Set working directory
 WORKDIR /var/www/html
+LABEL org.opencontainers.image.source="https://github.com/abdallah-shehawey/github-readme-streak-stats"
+LABEL org.opencontainers.image.description="GitHub contribution streak cards and demo site"
+LABEL org.opencontainers.image.licenses="MIT"
+COPY LICENSE /usr/share/licenses/github-readme-streak-stats/LICENSE
 
 # Copy composer files and install dependencies
 COPY composer.json composer.lock ./
-COPY src/ ./src/
+COPY api/ ./api/
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Configure Apache to serve from src/ directory and pass environment variables
+# Configure Apache to serve from api/ directory and pass environment variables
 RUN a2enmod rewrite headers && \
     echo 'ServerTokens Prod\n\
 ServerSignature Off\n\
 PassEnv TOKEN\n\
 <VirtualHost *:80>\n\
     ServerAdmin webmaster@localhost\n\
-    DocumentRoot /var/www/html/src\n\
-    <Directory /var/www/html/src>\n\
+    DocumentRoot /var/www/html/api\n\
+    <Directory /var/www/html/api>\n\
         Options -Indexes\n\
         AllowOverride None\n\
         Require all granted\n\
@@ -51,6 +55,8 @@ PassEnv TOKEN\n\
 RUN chown -R www-data:www-data /var/www/html && \
     find /var/www/html -type d -exec chmod 755 {} \; && \
     find /var/www/html -type f -exec chmod 644 {} \;
+
+RUN printf 'variables_order = "EGPCS"\n' > /usr/local/etc/php/conf.d/container-env.ini
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
